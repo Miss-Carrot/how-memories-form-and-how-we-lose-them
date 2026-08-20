@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How memories form and how we lose them – Catharine Young | TED</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --correct: #22c55e;
+      --incorrect: #ef4444;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px 60px;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-size: 1.05rem;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 28px 0 24px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* Listening quiz styles */
+    .question {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 18px;
+    }
+
+    .question h3 {
+      font-size: 1.08rem;
+      margin-bottom: 14px;
+      color: #f1f5f9;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      user-select: none;
+    }
+
+    .option:hover {
+      border-color: var(--accent);
+      background: #1e293b;
+    }
+
+    .option input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .option span {
+      flex: 1;
+    }
+
+    .option.correct {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: var(--correct);
+      color: #bbf7d0;
+    }
+
+    .option.incorrect {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--incorrect);
+      color: #fecaca;
+    }
+
+    /* Vocabulary page styles */
+    .instruction {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      color: #e2e8f0;
+      font-size: 1.05rem;
+    }
+
+    .vocab-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .vocab-item.correct {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: var(--correct);
+    }
+
+    .vocab-item.incorrect {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--incorrect);
+    }
+
+    .russian {
+      font-size: 1.05rem;
+      color: #f1f5f9;
+      font-weight: 500;
+    }
+
+    .vocab-item input {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .vocab-item input:focus {
+      border-color: var(--accent);
+    }
+
+    .vocab-item.correct input {
+      border-color: var(--correct);
+      color: #bbf7d0;
+    }
+
+    .vocab-item.incorrect input {
+      border-color: var(--incorrect);
+      color: #fecaca;
+    }
+
+    /* Inline gap inputs for page 3 */
+    .inline-gap {
+      display: inline-block;
+      width: 140px !important;
+      margin: 0 4px;
+      padding: 6px 10px !important;
+      font-size: 1rem;
+      vertical-align: baseline;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      outline: none;
+    }
+
+    .inline-gap:focus {
+      border-color: var(--accent);
+    }
+
+    .vocab-item.correct .inline-gap {
+      border-color: var(--correct);
+      color: #bbf7d0;
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .vocab-item.incorrect .inline-gap {
+      border-color: var(--incorrect);
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    #gapList .vocab-item .russian {
+      line-height: 1.8;
+    }
+
+    .correct-answer {
+      font-size: 0.9rem;
+      color: #86efac;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .vocab-item.incorrect .correct-answer {
+      display: block;
+    }
+
+    .hint-text {
+      text-align: center;
+      color: var(--muted);
+      margin: 24px 0 12px;
+      font-size: 1rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 28px 0 16px;
+      align-items: center;
+    }
+
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    #score, #vocabScore {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f8fafc;
+      margin-left: 8px;
+    }
+
+    .footer-note {
+      margin-top: 32px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>How memories form and how we lose them</h1>
+    <p class="subtitle">by Catharine Young | TED</p>
+    <p class="subtitle" style="margin-bottom: 20px;">Watch the video, then complete the tasks below.</p>
+
+    <div class="video-wrapper">
+      <iframe 
+        src="https://www.youtube.com/embed/yOgAbKJGrTA?rel=0" 
+        title="How memories form and how we lose them | Catharine Young | TED"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p style="text-align:center; margin:-6px 0 8px; color:#94a3b8; font-size:0.95rem;">
+      If the video appears as a black square, 
+      <a href="https://youtu.be/yOgAbKJGrTA" target="_blank" rel="noopener" style="color:#38bdf8;">
+        watch it directly on YouTube here
+      </a>.
+    </p>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-page="page1">1. Listening Comprehension</button>
+      <button class="tab-btn" data-page="page2">2. Vocabulary</button>
+      <button class="tab-btn" data-page="page3">3. Vocabulary Practice</button>
+    </div>
+
+    <!-- ========== PAGE 1: Listening Quiz ========== -->
+    <div id="page1" class="page active">
+      <form id="quizForm">
+
+        <div class="question" data-correct="B">
+          <h3>1. Why does the speaker compare remembering a vivid memory with remembering what you had for lunch three weeks ago?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q1" value="A"> <span>A) To show that memories become stronger when we think about them repeatedly</span></label>
+            <label class="option"><input type="radio" name="q1" value="B"> <span>B) To illustrate that some experiences are remembered more easily than others</span></label>
+            <label class="option"><input type="radio" name="q1" value="C"> <span>C) To explain why recent memories are usually more accurate</span></label>
+            <label class="option"><input type="radio" name="q1" value="D"> <span>D) To show that food-related memories are particularly difficult to remember</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="B">
+          <h3>2. What happens to information immediately after we experience something?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q2" value="A"> <span>A) It is stored permanently in the hippocampus.</span></label>
+            <label class="option"><input type="radio" name="q2" value="B"> <span>B) It is converted into electrical energy and travels through neurons.</span></label>
+            <label class="option"><input type="radio" name="q2" value="C"> <span>C) It is immediately distributed across several storage regions.</span></label>
+            <label class="option"><input type="radio" name="q2" value="D"> <span>D) It is stored in long-term memory for a few minutes.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="C">
+          <h3>3. How long can information remain in short-term memory, according to the speaker?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q3" value="A"> <span>A) Several hours</span></label>
+            <label class="option"><input type="radio" name="q3" value="B"> <span>B) Several days</span></label>
+            <label class="option"><input type="radio" name="q3" value="C"> <span>C) A few seconds to a couple of minutes</span></label>
+            <label class="option"><input type="radio" name="q3" value="D"> <span>D) A few minutes to several hours</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="B">
+          <h3>4. What is the role of long-term potentiation?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q4" value="A"> <span>A) It helps the brain produce more neurotransmitters.</span></label>
+            <label class="option"><input type="radio" name="q4" value="B"> <span>B) It increases the efficiency of communication between neurons.</span></label>
+            <label class="option"><input type="radio" name="q4" value="C"> <span>C) It prevents neurons from becoming weaker with age.</span></label>
+            <label class="option"><input type="radio" name="q4" value="D"> <span>D) It transfers information directly from short-term memory to the hippocampus.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="C">
+          <h3>5. According to the speaker, what is one way ageing can affect memory?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q5" value="A"> <span>A) The brain stops producing new neurons completely.</span></label>
+            <label class="option"><input type="radio" name="q5" value="B"> <span>B) The hippocampus becomes disconnected from other parts of the brain.</span></label>
+            <label class="option"><input type="radio" name="q5" value="C"> <span>C) Synapses can become weaker, making memories harder to retrieve.</span></label>
+            <label class="option"><input type="radio" name="q5" value="D"> <span>D) People become unable to form short-term memories.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="A">
+          <h3>6. What happens to the hippocampus as people get older?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q6" value="A"> <span>A) It loses around 5% of its neurons every decade.</span></label>
+            <label class="option"><input type="radio" name="q6" value="B"> <span>B) It loses 5% of its neurons every year.</span></label>
+            <label class="option"><input type="radio" name="q6" value="C"> <span>C) It stops functioning properly around the age of 80.</span></label>
+            <label class="option"><input type="radio" name="q6" value="D"> <span>D) It becomes 20% smaller every decade.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="B">
+          <h3>7. When are memories encoded most strongly?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q7" value="A"> <span>A) When people are relaxed and doing something familiar</span></label>
+            <label class="option"><input type="radio" name="q7" value="B"> <span>B) When people are paying attention and the information is meaningful</span></label>
+            <label class="option"><input type="radio" name="q7" value="C"> <span>C) When people repeat information immediately after hearing it</span></label>
+            <label class="option"><input type="radio" name="q7" value="D"> <span>D) When people are under a certain amount of stress</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="C">
+          <h3>8. Why does the speaker describe mental and physical health problems as “memory thieves”?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q8" value="A"> <span>A) They directly destroy memories that have already been stored.</span></label>
+            <label class="option"><input type="radio" name="q8" value="B"> <span>B) They prevent people from accessing long-term memory altogether.</span></label>
+            <label class="option"><input type="radio" name="q8" value="C"> <span>C) They can interfere with people's ability to pay attention.</span></label>
+            <label class="option"><input type="radio" name="q8" value="D"> <span>D) They cause people to forget information from their childhood.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="C">
+          <h3>9. What happens to the body during chronic stress, according to the speaker?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q9" value="A"> <span>A) It produces fewer chemicals connected with alertness.</span></label>
+            <label class="option"><input type="radio" name="q9" value="B"> <span>B) It becomes less sensitive to stressful situations.</span></label>
+            <label class="option"><input type="radio" name="q9" value="C"> <span>C) It remains in a state of heightened alertness and is flooded with stress chemicals.</span></label>
+            <label class="option"><input type="radio" name="q9" value="D"> <span>D) It directs more energy towards forming new brain cells.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="A">
+          <h3>10. How can chronic stress affect memory?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q10" value="A"> <span>A) It can cause a loss of brain cells and make it harder to form new ones.</span></label>
+            <label class="option"><input type="radio" name="q10" value="B"> <span>B) It makes people focus too intensely on new information.</span></label>
+            <label class="option"><input type="radio" name="q10" value="C"> <span>C) It prevents the brain from converting electrical energy into memories.</span></label>
+            <label class="option"><input type="radio" name="q10" value="D"> <span>D) It causes people to lose access to memories stored in the hippocampus.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="B">
+          <h3>11. Why might depression affect a person's ability to remember new information?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q11" value="A"> <span>A) Depression causes the hippocampus to lose 20% of its neurons.</span></label>
+            <label class="option"><input type="radio" name="q11" value="B"> <span>B) Low serotonin levels may make people less attentive to new information.</span></label>
+            <label class="option"><input type="radio" name="q11" value="C"> <span>C) Depressed people are unable to form long-term memories.</span></label>
+            <label class="option"><input type="radio" name="q11" value="D"> <span>D) Depression increases the production of stress chemicals in the brain.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="C">
+          <h3>12. How can dwelling on sad events affect memory?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q12" value="A"> <span>A) It makes people remember negative events more accurately.</span></label>
+            <label class="option"><input type="radio" name="q12" value="B"> <span>B) It increases their ability to concentrate on the present.</span></label>
+            <label class="option"><input type="radio" name="q12" value="C"> <span>C) It makes it harder to pay attention to what is happening in the present.</span></label>
+            <label class="option"><input type="radio" name="q12" value="D"> <span>D) It causes short-term memories to become long-term memories too quickly.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="B">
+          <h3>13. What did the Harvard study mentioned by the speaker find?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q13" value="A"> <span>A) Socially isolated people experienced fewer memory problems as they aged.</span></label>
+            <label class="option"><input type="radio" name="q13" value="B"> <span>B) Older people with strong social connections experienced slower memory decline.</span></label>
+            <label class="option"><input type="radio" name="q13" value="C"> <span>C) Social interaction prevented older people from losing neurons.</span></label>
+            <label class="option"><input type="radio" name="q13" value="D"> <span>D) People with depression had significantly better memories when socially active.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="B">
+          <h3>14. Why do experts think social interaction may help protect memory?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q14" value="A"> <span>A) It increases blood flow to the brain.</span></label>
+            <label class="option"><input type="radio" name="q14" value="B"> <span>B) It gives the brain regular mental stimulation.</span></label>
+            <label class="option"><input type="radio" name="q14" value="C"> <span>C) It reduces the production of neurotransmitters.</span></label>
+            <label class="option"><input type="radio" name="q14" value="D"> <span>D) It prevents people from experiencing stressful situations.</span></label>
+          </div>
+        </div>
+
+        <div class="question" data-correct="C">
+          <h3>15. Which of the following does the speaker recommend for maintaining good memory?</h3>
+          <div class="options">
+            <label class="option"><input type="radio" name="q15" value="A"> <span>A) Avoiding challenging activities as you get older</span></label>
+            <label class="option"><input type="radio" name="q15" value="B"> <span>B) Spending more time alone to allow the brain to rest</span></label>
+            <label class="option"><input type="radio" name="q15" value="C"> <span>C) Staying physically active, eating well, and challenging the brain</span></label>
+            <label class="option"><input type="radio" name="q15" value="D"> <span>D) Focusing mainly on remembering information from the past</span></label>
+          </div>
+        </div>
+
+      </form>
+
+      <div class="controls">
+        <button type="button" id="checkBtn">Check all answers</button>
+        <button type="button" id="resetBtn" class="secondary">Reset quiz</button>
+        <span id="score"></span>
+      </div>
+
+      <p class="footer-note">Select your answers, then click “Check all answers” to see which ones are correct (green) or incorrect (red).</p>
+    </div>
+
+    <!-- ========== PAGE 2: Vocabulary ========== -->
+    <div id="page2" class="page">
+      <div class="instruction">
+        Try to remember the English equivalents of these expressions. Then watch the video again and check your answers.
+      </div>
+
+      <div id="vocabList">
+        <!-- items will be rendered by JS or hardcoded -->
+        <div class="vocab-item" data-answer="a vivid memory">
+          <div class="russian">яркое / живое воспоминание</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>a vivid memory</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="to retrieve memories">
+          <div class="russian">извлекать воспоминания из памяти / вспоминать</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>to retrieve memories</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="memories are encoded">
+          <div class="russian">воспоминания кодируются</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>memories are encoded</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="to store memories">
+          <div class="russian">хранить воспоминания</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>to store memories</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="memories get lost">
+          <div class="russian">воспоминания утрачиваются / забываются</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>memories get lost</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="to retain information">
+          <div class="russian">удерживать / сохранять информацию в памяти</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>to retain information</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="memory decline">
+          <div class="russian">ухудшение памяти</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>memory decline</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="memory loss">
+          <div class="russian">потеря памяти</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>memory loss</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="to preserve your memories">
+          <div class="russian">сохранять свои воспоминания</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>to preserve your memories</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="to keep your memories intact">
+          <div class="russian">сохранять воспоминания в неизменном виде</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>to keep your memories intact</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answer="a memory fades">
+          <div class="russian">воспоминание постепенно стирается / тускнеет</div>
+          <input type="text" placeholder="Type the English equivalent…" autocomplete="off">
+          <div class="correct-answer">Correct: <strong>a memory fades</strong></div>
+        </div>
+      </div>
+
+      <p class="hint-text">Watch the video one more time, then check your answers below.</p>
+
+      <div class="controls">
+        <button type="button" id="vocabCheckBtn">Check</button>
+        <button type="button" id="vocabResetBtn" class="secondary">Reset</button>
+        <span id="vocabScore"></span>
+      </div>
+
+      <p class="footer-note">Type your answers, then click “Check”. Correct answers turn green, incorrect ones turn red (and the correct version is shown).</p>
+    </div>
+
+    <!-- ========== PAGE 3: Vocabulary Practice (gap-fill) ========== -->
+    <div id="page3" class="page">
+      <div class="instruction">
+        Fill in the gaps in the sentences below using the words: encoded / store / retain / intact / fade / lost / decline / preserve / retrieve / vivid / loss
+      </div>
+
+      <div id="gapList">
+        <div class="vocab-item" data-answers="store">
+          <div class="russian">1) The brain can <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> memories for decades, which is why people can still remember events from their childhood.</div>
+          <div class="correct-answer">Correct: <strong>store</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="retrieve">
+          <div class="russian">2) Sometimes hearing an old song can help you <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> memories from your childhood that you haven't thought about for years.</div>
+          <div class="correct-answer">Correct: <strong>retrieve</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="intact">
+          <div class="russian">3) I saved all my old childhood journals just to keep those memories <input type="text" class="inline-gap" placeholder="..." autocomplete="off">.</div>
+          <div class="correct-answer">Correct: <strong>intact</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="preserve">
+          <div class="russian">4) People often take photos and videos when they travel because they want to <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> their memories of the places they've visited.</div>
+          <div class="correct-answer">Correct: <strong>preserve</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="fade">
+          <div class="russian">5) If you don't use a piece of information for years, a memory can gradually <input type="text" class="inline-gap" placeholder="..." autocomplete="off">, even if you once remembered it perfectly.</div>
+          <div class="correct-answer">Correct: <strong>fade</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="lost">
+          <div class="russian">6) We don't remember everything that happens to us. Over time, some memories get <input type="text" class="inline-gap" placeholder="..." autocomplete="off">, especially if we never think about them again.</div>
+          <div class="correct-answer">Correct: <strong>lost</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="decline">
+          <div class="russian">7) Regular physical and mental exercise may help slow down memory <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> as we get older.</div>
+          <div class="correct-answer">Correct: <strong>decline</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="loss|decline">
+          <div class="russian">8) His family first noticed his memory <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> when he started forgetting the names of people he'd known for years.</div>
+          <div class="correct-answer">Correct: <strong>loss</strong> or <strong>decline</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="retain">
+          <div class="russian">9) I always write things down during meetings because it helps me <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> information and remember what was discussed later.</div>
+          <div class="correct-answer">Correct: <strong>retain</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="vivid">
+          <div class="russian">10) I still have a <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> memory of my first day at school — I can remember exactly what the classroom looked and smelled like.</div>
+          <div class="correct-answer">Correct: <strong>vivid</strong></div>
+        </div>
+
+        <div class="vocab-item" data-answers="encoded">
+          <div class="russian">11) Researchers believe that memories are <input type="text" class="inline-gap" placeholder="..." autocomplete="off"> differently depending on how much attention we pay to an experience.</div>
+          <div class="correct-answer">Correct: <strong>encoded</strong></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button type="button" id="gapCheckBtn">Check</button>
+        <button type="button" id="gapResetBtn" class="secondary">Reset</button>
+        <span id="gapScore"></span>
+      </div>
+
+      <p class="footer-note">Fill in the gaps, then click “Check”. Correct answers turn green, incorrect ones turn red (and the correct version is shown).</p>
+    </div>
+
+  </div>
+
+  <script>
+    // ===== Tab switching =====
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const pages = document.querySelectorAll('.page');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.page).classList.add('active');
+      });
+    });
+
+    // ===== Page 1: Listening Quiz =====
+    const questions = document.querySelectorAll('#page1 .question');
+    const scoreEl = document.getElementById('score');
+    const checkBtn = document.getElementById('checkBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    checkBtn.addEventListener('click', () => {
+      let correctCount = 0;
+
+      questions.forEach(q => {
+        const correct = q.dataset.correct;
+        const options = q.querySelectorAll('.option');
+        const selected = q.querySelector('input:checked');
+
+        options.forEach(o => o.classList.remove('correct', 'incorrect'));
+
+        if (selected) {
+          const selectedOpt = selected.closest('.option');
+          if (selected.value === correct) {
+            selectedOpt.classList.add('correct');
+            correctCount++;
+          } else {
+            selectedOpt.classList.add('incorrect');
+            options.forEach(o => {
+              if (o.querySelector('input').value === correct) {
+                o.classList.add('correct');
+              }
+            });
+          }
+        }
+      });
+
+      scoreEl.textContent = `Score: ${correctCount} / ${questions.length}`;
+    });
+
+    resetBtn.addEventListener('click', () => {
+      document.getElementById('quizForm').reset();
+      document.querySelectorAll('#page1 .option').forEach(o => {
+        o.classList.remove('correct', 'incorrect');
+      });
+      scoreEl.textContent = '';
+    });
+
+    // ===== Page 2: Vocabulary (Russian → English) =====
+    const vocabItems = document.querySelectorAll('#page2 .vocab-item');
+    const vocabCheckBtn = document.getElementById('vocabCheckBtn');
+    const vocabResetBtn = document.getElementById('vocabResetBtn');
+    const vocabScoreEl = document.getElementById('vocabScore');
+
+    function normalize(str) {
+      return str
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ')
+        .replace(/[’‘]/g, "'");
+    }
+
+    vocabCheckBtn.addEventListener('click', () => {
+      let correctCount = 0;
+
+      vocabItems.forEach(item => {
+        const input = item.querySelector('input');
+        const userAnswer = normalize(input.value);
+        const correctAnswer = normalize(item.dataset.answer);
+
+        item.classList.remove('correct', 'incorrect');
+
+        if (userAnswer === '') {
+          return;
+        }
+
+        if (userAnswer === correctAnswer) {
+          item.classList.add('correct');
+          correctCount++;
+        } else {
+          item.classList.add('incorrect');
+        }
+      });
+
+      vocabScoreEl.textContent = `Score: ${correctCount} / ${vocabItems.length}`;
+    });
+
+    vocabResetBtn.addEventListener('click', () => {
+      vocabItems.forEach(item => {
+        item.classList.remove('correct', 'incorrect');
+        item.querySelector('input').value = '';
+      });
+      vocabScoreEl.textContent = '';
+    });
+
+    // ===== Page 3: Vocabulary Practice (gap-fill) =====
+    const gapItems = document.querySelectorAll('#page3 .vocab-item');
+    const gapCheckBtn = document.getElementById('gapCheckBtn');
+    const gapResetBtn = document.getElementById('gapResetBtn');
+    const gapScoreEl = document.getElementById('gapScore');
+
+    gapCheckBtn.addEventListener('click', () => {
+      let correctCount = 0;
+
+      gapItems.forEach(item => {
+        const input = item.querySelector('input');
+        const userAnswer = normalize(input.value);
+        const accepted = item.dataset.answers.split('|').map(a => normalize(a));
+
+        item.classList.remove('correct', 'incorrect');
+
+        if (userAnswer === '') {
+          return;
+        }
+
+        if (accepted.includes(userAnswer)) {
+          item.classList.add('correct');
+          correctCount++;
+        } else {
+          item.classList.add('incorrect');
+        }
+      });
+
+      gapScoreEl.textContent = `Score: ${correctCount} / ${gapItems.length}`;
+    });
+
+    gapResetBtn.addEventListener('click', () => {
+      gapItems.forEach(item => {
+        item.classList.remove('correct', 'incorrect');
+        item.querySelector('input').value = '';
+      });
+      gapScoreEl.textContent = '';
+    });
+  </script>
+</body>
+</html>
